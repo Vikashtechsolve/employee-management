@@ -18,8 +18,7 @@ async function bootstrap() {
   app.use(helmet());
   app.use(
     cors({
-      origin: env.clientUrl,
-      credentials: true,
+      origin: '*',
     })
   );
   app.use(morgan(env.nodeEnv === 'production' ? 'combined' : 'dev'));
