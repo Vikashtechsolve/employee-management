@@ -7,6 +7,7 @@ const router = express.Router();
 
 router.get('/health', ctrl.health);
 router.get('/dashboard', authenticate, dash.dashboard);
+router.get('/dashboard/calendar', authenticate, dash.calendarStats);
 router.get('/holidays', authenticate, ctrl.listHolidays);
 router.post('/holidays', authenticate, authorize(...ADMIN_ROLES), ctrl.createHoliday);
 router.delete('/holidays/:id', authenticate, authorize(...ADMIN_ROLES), ctrl.deleteHoliday);

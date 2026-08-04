@@ -73,7 +73,7 @@ export default function LoginPage() {
             Password
             <div className="relative mt-1">
               <input
-                className="input pr-11"
+                className="input input-icon-right"
                 type={showPassword ? 'text' : 'password'}
                 name="password"
                 autoComplete="current-password"

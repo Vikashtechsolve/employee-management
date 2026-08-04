@@ -132,13 +132,12 @@ export default function TicketDetailPage() {
         </div>
       </div>
 
-      <section className="overflow-hidden rounded-[28px] border border-[var(--line)] bg-[linear-gradient(135deg,#042f2e_0%,#134e4a_55%,#1c1917_100%)] text-white">
-        <div className="p-6 sm:p-8">
-          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-teal-200/80">
+      <section className="hero-panel p-6 sm:p-8">
+          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-teal-700">
             {ticket.ticketNumber}
           </p>
-          <h1 className="font-display mt-2 text-3xl sm:text-4xl">{ticket.title}</h1>
-          <div className="mt-4 flex flex-wrap gap-4 text-sm text-teal-50/85">
+          <h1 className="font-display mt-2 text-3xl text-slate-900 sm:text-4xl">{ticket.title}</h1>
+          <div className="mt-4 flex flex-wrap gap-4 text-sm text-slate-600">
             <span className="inline-flex items-center gap-1.5">
               <UserRound size={14} />
               {ticket.assignee?.name || 'Unassigned'}
@@ -155,12 +154,11 @@ export default function TicketDetailPage() {
             </span>
           </div>
           {overdue ? (
-            <div className="mt-4 inline-flex items-center gap-2 rounded-xl bg-rose-500/20 px-3 py-2 text-sm text-rose-100">
+            <div className="mt-4 inline-flex items-center gap-2 rounded-xl bg-rose-50 px-3 py-2 text-sm text-rose-800 ring-1 ring-rose-100">
               <AlertTriangle size={15} />
               This ticket is past its due date
             </div>
           ) : null}
-        </div>
       </section>
 
       <div className="grid gap-4 lg:grid-cols-[1.4fr_1fr]">

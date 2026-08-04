@@ -20,8 +20,10 @@ import api from '../api/client';
 import toast from 'react-hot-toast';
 
 function linkClass({ isActive }) {
-  return `flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition ${
-    isActive ? 'bg-teal-800/60 text-white' : 'text-teal-100/80 hover:bg-teal-900/50 hover:text-white'
+  return `flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium transition ${
+    isActive
+      ? 'bg-teal-50 text-teal-800 shadow-sm ring-1 ring-teal-100'
+      : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
   }`;
 }
 
@@ -44,21 +46,25 @@ export default function AppLayout() {
     navigate('/login');
   }
 
-  const nav = [
-    { to: '/app', label: 'Dashboard', icon: LayoutDashboard, end: true },
-    { to: '/app/work', label: 'My Daily Work', icon: ClipboardList },
-    { to: '/app/attendance', label: 'Attendance', icon: CalendarDays },
-    { to: '/app/leaves', label: 'Leaves', icon: Umbrella },
-    { to: '/app/tickets', label: 'Tickets', icon: Ticket },
-  ];
+  const nav = [{ to: '/app', label: 'Dashboard', icon: LayoutDashboard, end: true }];
+
+  if (!isAdminLike) {
+    nav.push(
+      { to: '/app/work', label: 'My Daily Work', icon: ClipboardList },
+      { to: '/app/attendance', label: 'Attendance', icon: CalendarDays },
+      { to: '/app/leaves', label: 'Leaves', icon: Umbrella }
+    );
+  }
+
+  nav.push({ to: '/app/tickets', label: 'Tickets', icon: Ticket });
 
   if (isManagerPlus) {
-    nav.splice(2, 0, {
-      to: '/app/team/worklogs',
-      label: isAdminLike ? 'Employee Work' : 'Team Work',
-      icon: Eye,
-    });
     nav.push(
+      {
+        to: '/app/team/worklogs',
+        label: isAdminLike ? 'Employee Work' : 'Team Work',
+        icon: Eye,
+      },
       { to: '/app/team/attendance', label: 'Team Attendance', icon: Users },
       { to: '/app/team/leaves', label: 'Leave Approvals', icon: FileText }
     );
@@ -73,23 +79,27 @@ export default function AppLayout() {
   }
 
   return (
-    <div className="min-h-screen lg:grid lg:grid-cols-[260px_1fr]">
+    <div className="min-h-screen bg-[var(--bg)] lg:grid lg:grid-cols-[268px_1fr]">
       <aside
-        className={`fixed inset-y-0 left-0 z-40 w-[260px] transform bg-[var(--sidebar)] p-4 text-[var(--sidebar-text)] transition lg:static lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-40 flex w-[268px] transform flex-col border-r border-slate-200/80 bg-white shadow-[var(--shadow-lg)] transition lg:static lg:translate-x-0 ${
           open ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
-        <div className="mb-8 flex items-center justify-between">
+        <div className="flex items-center justify-between border-b border-slate-100 px-5 py-5">
           <div>
-            <p className="font-display text-2xl text-white">WorkPulse</p>
-            <p className="text-xs text-teal-200/70">Attendance + Work EMS</p>
+            <p className="font-display text-2xl text-slate-900">WorkPulse</p>
+            <p className="text-xs text-slate-500">Work & attendance</p>
           </div>
-          <button className="lg:hidden" onClick={() => setOpen(false)} type="button">
+          <button
+            className="rounded-lg p-1.5 text-slate-500 hover:bg-slate-100 lg:hidden"
+            onClick={() => setOpen(false)}
+            type="button"
+          >
             <X size={18} />
           </button>
         </div>
 
-        <nav className="space-y-1">
+        <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4">
           {nav.map((item) => (
             <NavLink
               key={item.to}
@@ -98,42 +108,44 @@ export default function AppLayout() {
               className={linkClass}
               onClick={() => setOpen(false)}
             >
-              <item.icon size={16} />
+              <item.icon size={17} strokeWidth={2} />
               {item.label}
             </NavLink>
           ))}
         </nav>
 
-        <div className="mt-8 border-t border-teal-800 pt-4">
-          <p className="text-sm font-semibold text-white">{user?.name}</p>
-          <p className="text-xs capitalize text-teal-200/70">
-            {user?.role?.replaceAll('_', ' ')} · {user?.employeeId}
-          </p>
-          <button
-            type="button"
-            onClick={handleLogout}
-            className="mt-3 flex items-center gap-2 text-sm text-teal-100/80 hover:text-white"
-          >
-            <LogOut size={14} /> Sign out
-          </button>
+        <div className="border-t border-slate-100 p-4">
+          <div className="rounded-xl bg-slate-50 p-3 ring-1 ring-slate-100">
+            <p className="truncate text-sm font-semibold text-slate-900">{user?.name}</p>
+            <p className="mt-0.5 truncate text-xs capitalize text-slate-500">
+              {user?.role?.replaceAll('_', ' ')} · {user?.employeeId}
+            </p>
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="mt-3 flex w-full items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:bg-slate-50"
+            >
+              <LogOut size={14} /> Sign out
+            </button>
+          </div>
         </div>
       </aside>
 
       {open ? (
         <button
           type="button"
-          className="fixed inset-0 z-30 bg-black/40 lg:hidden"
+          className="fixed inset-0 z-30 bg-slate-900/20 backdrop-blur-[2px] lg:hidden"
           onClick={() => setOpen(false)}
           aria-label="Close menu"
         />
       ) : null}
 
-      <div className="min-w-0">
-        <header className="sticky top-0 z-20 flex items-center gap-3 border-b border-[var(--line)] bg-[color-mix(in_srgb,var(--bg)_88%,white)] px-4 py-3 backdrop-blur lg:hidden">
+      <div className="shell-main min-w-0">
+        <header className="sticky top-0 z-20 flex items-center gap-3 border-b border-slate-200/80 bg-white/90 px-4 py-3 shadow-sm backdrop-blur lg:hidden">
           <button type="button" onClick={() => setOpen(true)} className="btn btn-secondary px-2">
             <Menu size={18} />
           </button>
-          <p className="font-display text-lg">WorkPulse</p>
+          <p className="font-display text-lg text-slate-900">WorkPulse</p>
         </header>
         <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
           <Outlet />

@@ -121,7 +121,13 @@ const listAllWorkLogs = asyncHandler(async (req, res) => {
 
   if (req.user.role === 'manager' && !isAdminLike(req.user)) {
     const teamIds = await User.find({ manager: req.user._id }).distinct('_id');
-    filter.employee = { $in: teamIds };
+    if (employee) {
+      if (!teamIds.map(String).includes(String(employee))) {
+        throw new ApiError(403, 'Not your team member');
+      }
+    } else {
+      filter.employee = { $in: teamIds };
+    }
   } else if (department) {
     const empIds = await User.find({ department }).distinct('_id');
     filter.employee = { $in: empIds };
