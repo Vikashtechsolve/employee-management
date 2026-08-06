@@ -18,9 +18,18 @@ export default function LoginPage() {
 
   async function onSubmit(e) {
     e.preventDefault();
+    const normalizedEmail = email.trim().toLowerCase();
+    const normalizedPassword = password.trim();
+    if (!normalizedEmail || !normalizedPassword) {
+      toast.error('Email and password are required');
+      return;
+    }
     setLoading(true);
     try {
-      const { data } = await api.post('/auth/login', { email, password });
+      const { data } = await api.post('/auth/login', {
+        email: normalizedEmail,
+        password: normalizedPassword,
+      });
       setSession(data.data);
       toast.success(`Welcome, ${data.data.user.name}`);
       navigate('/app');
@@ -65,6 +74,7 @@ export default function LoginPage() {
               autoFocus
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              onBlur={(e) => setEmail(e.target.value.trim())}
               required
             />
           </label>

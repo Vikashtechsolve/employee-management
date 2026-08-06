@@ -3,6 +3,7 @@ const LeaveBalance = require('../models/LeaveBalance');
 const { ensureBalances } = require('../services/leaveEngine');
 const { ApiError, asyncHandler } = require('../utils/errors');
 const { isAdminLike } = require('../middleware/auth');
+const { normalizeEmail, normalizePassword } = require('../utils/authInput');
 const AuditLog = require('../models/AuditLog');
 
 const listUsers = asyncHandler(async (req, res) => {
@@ -88,20 +89,23 @@ const createUser = asyncHandler(async (req, res) => {
     throw new ApiError(400, 'employeeId, name, email, password are required');
   }
 
+  const normalizedEmail = normalizeEmail(email);
+  const normalizedPassword = normalizePassword(password);
+
   if (role === 'super_admin' && req.user.role !== 'super_admin') {
     throw new ApiError(403, 'Only super admin can create super admins');
   }
 
   const exists = await User.findOne({
-    $or: [{ email: email.toLowerCase() }, { employeeId }],
+    $or: [{ email: normalizedEmail }, { employeeId: String(employeeId).trim() }],
   });
   if (exists) throw new ApiError(409, 'Email or employeeId already exists');
 
   const user = await User.create({
-    employeeId,
-    name,
-    email,
-    password,
+    employeeId: String(employeeId).trim(),
+    name: String(name).trim(),
+    email: normalizedEmail,
+    password: normalizedPassword,
     role,
     department: department || null,
     designation: designation || '',

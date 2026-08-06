@@ -6,13 +6,15 @@ const {
   hashToken,
 } = require('../utils/tokens');
 const { ApiError, asyncHandler } = require('../utils/errors');
+const { normalizeEmail, normalizePassword } = require('../utils/authInput');
 const env = require('../config/env');
 
 const login = asyncHandler(async (req, res) => {
-  const { email, password } = req.body;
+  const email = normalizeEmail(req.body.email);
+  const password = normalizePassword(req.body.password);
   if (!email || !password) throw new ApiError(400, 'Email and password required');
 
-  const user = await User.findOne({ email: email.toLowerCase() }).select('+password');
+  const user = await User.findOne({ email }).select('+password');
   if (!user || !(await user.comparePassword(password))) {
     throw new ApiError(401, 'Invalid credentials');
   }
@@ -70,7 +72,8 @@ const me = asyncHandler(async (req, res) => {
 });
 
 const changePassword = asyncHandler(async (req, res) => {
-  const { currentPassword, newPassword } = req.body;
+  const currentPassword = normalizePassword(req.body.currentPassword);
+  const newPassword = normalizePassword(req.body.newPassword);
   if (!currentPassword || !newPassword) {
     throw new ApiError(400, 'Current and new password required');
   }
